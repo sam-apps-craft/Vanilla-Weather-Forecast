@@ -53,6 +53,13 @@ function handleSearchSubmit(event) {
   searchCity(searchInput.value);
 }
 
+function formatDay(timestamp) {
+  let date = new Date(timestamp * 1000);
+  let days = ["Sun", "Mon", "Tue", "Wed", "Thur", "Fri", "Sat"];
+
+  return days[date.getDay()];
+}
+
 let searchFormElement = document.querySelector("#search-form");
 searchFormElement.addEventListener("submit", handleSearchSubmit);
 
@@ -63,28 +70,33 @@ function getForecast(city) {
 }
 
 function displayForecast(response) {
-  console.log(response.data);
-
-  let days = [`Mon`, `Tue`, `Wed`, `Thur`, `Fri`];
-
   let forecastHtml = "";
 
-  days.forEach(function (day) {
-    forecastHtml =
-      forecastHtml +
-      `
+  response.data.daily.forEach(function (day, index) {
+    if (index < 5) {
+      forecastHtml =
+        forecastHtml +
+        `
       
       <div class="weather-forecast-day">
-        <div class="weather-forecast-date">${day}</div>
-        <div class="weather-forecast-icon" >☀️</div>
+        <div class="weather-forecast-date">${formatDay(day.time)}</div>
+        <div class="weather-forecast-icon" >
+        <img src = "${day.condition.icon_url}" />
+        
+        </div>
         <div class="weather-forecast-temperatures">
-          <span class="weather-forecast-temperature-max"> 18 </span>
-          <span class="weather-forecast-temperature-min"> 12 </span>
+          <span class="weather-forecast-temperature-max"> ${Math.round(
+            day.temperature.maximum
+          )}°C </span>
+          <span class="weather-forecast-temperature-min">${Math.round(
+            day.temperature.minimum
+          )}°C </span>
          </div>
       </div>
     `;
+    }
   });
   let forecastElement = document.querySelector("#forecast");
   forecastElement.innerHTML = forecastHtml;
 }
-searchCity("Monteux");
+searchCity("Tadcaster");
